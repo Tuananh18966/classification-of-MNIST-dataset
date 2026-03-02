@@ -4,13 +4,13 @@ import torch.nn as nn
 import numpy as np
 
 # =====================
-# DEVICE
+#       DEVICE
 # =====================
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print("Device:", device)
 
 # =====================
-# MODEL
+#        MODEL
 # =====================
 class CNN(nn.Module):
 
@@ -49,7 +49,7 @@ class CNN(nn.Module):
 
 
 # =====================
-# LOAD MODEL
+#     LOAD MODEL
 # =====================
 model = CNN().to(device)
 
@@ -62,7 +62,7 @@ model.eval()
 print("Model loaded!")
 
 # =====================
-# CAMERA
+#       CAMERA
 # =====================
 cap = cv2.VideoCapture(0)
 
@@ -77,25 +77,22 @@ while True:
     if not ret:
         break
 
-    # flip để giống gương
-    frame = cv2.flip(frame, 1)
-
-    # vẽ khung ROI
+    # Draw ROI frame
     cv2.rectangle(frame, (x1,y1), (x2,y2), (0,255,0), 2)
 
     # crop ROI
     roi = frame[y1:y2, x1:x2]
 
     # =====================
-    # PREPROCESS
+    #     PREPROCESS
     # =====================
 
     gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
 
-    # blur giảm noise
+    # blur decrease noise
     gray = cv2.GaussianBlur(gray, (5,5), 0)
 
-    # threshold → giống MNIST
+    # threshold 
     _, thresh = cv2.threshold(
         gray,
         0,
@@ -116,7 +113,7 @@ while True:
                   .to(device)
 
     # =====================
-    # PREDICT
+    #      PREDICT
     # =====================
     with torch.no_grad():
 
@@ -127,7 +124,7 @@ while True:
         confidence = torch.softmax(output, dim=1).max().item()
 
     # =====================
-    # SHOW RESULT
+    #     SHOW RESULT
     # =====================
 
     cv2.putText(frame,
